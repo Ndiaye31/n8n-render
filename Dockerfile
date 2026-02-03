@@ -1,16 +1,14 @@
-FROM mwader/static-ffmpeg:latest AS ffmpeg
 FROM n8nio/n8n:latest
 
 USER root
 
-# Copier les binaires
-COPY --from=ffmpeg /ffmpeg /usr/local/bin/ffmpeg
-COPY --from=ffmpeg /ffprobe /usr/local/bin/ffprobe
-
-# Rendre exécutables
-RUN chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
+# Installer ffmpeg avec apt (Debian/Ubuntu) au lieu de apk (Alpine)
+RUN apt-get update && \
+    apt-get install -y ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Vérification
-RUN ffmpeg -version && ffprobe -version
+RUN ffmpeg -version
 
 USER node
