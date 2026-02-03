@@ -1,11 +1,16 @@
+FROM mwader/static-ffmpeg:latest AS ffmpeg
 FROM n8nio/n8n:latest
 
 USER root
 
-# Installer ffmpeg directement depuis les repos Alpine
-RUN apk update && apk add --no-cache ffmpeg
+# Copier les binaires
+COPY --from=ffmpeg /ffmpeg /usr/local/bin/ffmpeg
+COPY --from=ffmpeg /ffprobe /usr/local/bin/ffprobe
+
+# Rendre exécutables
+RUN chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
 
 # Vérification
-RUN ffmpeg -version
+RUN ffmpeg -version && ffprobe -version
 
 USER node
